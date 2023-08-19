@@ -1,0 +1,10 @@
+import { logger } from "./application/logging.js";
+import { web } from "./application/web.js";
+
+web.listen(3000, () => {
+  logger.info("app run start at port 3000");
+});
+
+web.get("/", (req, res) => {
+  res.send("Hello World!");
+});

@@ -13,5 +13,6 @@ userRouter.delete("/api/users/logout", userController.logout);
 
 // Contact Api
 userRouter.post("/api/contacts", contactController12.create);
+userRouter.get("/api/contacts/:contactId", contactController12.get);
 
 export { userRouter };

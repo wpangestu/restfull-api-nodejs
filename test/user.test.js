@@ -232,7 +232,7 @@ describe("DELETE /api/users/logout", function(){
     await removeTestUser();
   });
 
-  it("shold can logout user",async()=>{
+  it("should can logout user",async()=>{
     const result = await supertest(web)
       .delete("/api/users/logout")
       .set("Authorization","test");

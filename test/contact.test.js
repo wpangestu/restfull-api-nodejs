@@ -84,3 +84,97 @@ describe("GET /api/contact/contactId", function (){
         expect(result.status).toBe(404);
     })
 });
+
+describe("PUT /api/contacts/contactId",function () {
+    beforeEach(async ()=>{
+        await createTestUser();
+        await createTestContact();
+    });
+
+    afterEach(async ()=>{
+        await removeAllTestContact();
+        await removeTestUser();
+    });
+
+    it('should can update contact', async () => {
+        const contact = await getTestContact();
+        const result = await supertest(web)
+            .put("/api/contacts/"+contact.id)
+            .set("Authorization","test")
+            .send({
+                first_name:"test2",
+                last_name:"test2",
+                email:"test@testmail2.com",
+                phone:"0852222222"
+            });
+
+        expect(result.status).toBe(200);
+        expect(result.body.data.id).toBe(contact.id);
+        expect(result.body.data.first_name).toBe("test2");
+        expect(result.body.data.last_name).toBe("test2");
+        expect(result.body.data.email).toBe("test@testmail2.com");
+        expect(result.body.data.phone).toBe("0852222222");
+    });
+
+    it('should reject update contact', async () => {
+        const contact = await getTestContact();
+        const result = await supertest(web)
+            .put("/api/contacts/"+contact.id)
+            .set("Authorization","test")
+            .send({
+                first_name:"",
+                last_name:"",
+                email:"testtestmailcom",
+                phone:"08522222223213131313"
+            });
+
+        expect(result.status).toBe(400);
+    });
+
+    it('should reject update contact if contact is not found', async () => {
+        const contact = await getTestContact();
+        const result = await supertest(web)
+            .put("/api/contacts/"+(contact.id+1))
+            .set("Authorization","test")
+            .send({
+                first_name:"test2",
+                last_name:"test2",
+                email:"test@testmail2.com",
+                phone:"0852222222"
+            });
+        expect(result.status).toBe(404);
+    });
+});
+
+describe("DELETE /api/contact/:contactId",function (){
+    beforeEach(async ()=>{
+        await createTestUser();
+        await createTestContact();
+    });
+
+    afterEach(async ()=>{
+        await removeAllTestContact();
+        await removeTestUser();
+    });
+
+    it('should can delete contact', async () => {
+        let contact = await getTestContact();
+        const result = await supertest(web)
+            .delete("/api/contacts/"+contact.id)
+            .set("Authorization","test");
+
+        expect(result.status).toBe(200);
+
+        contact = await getTestContact();
+        expect(contact).toBeNull();
+    });
+
+    it('should reject delete contact', async () => {
+        const contact = await getTestContact();
+        const result = await supertest(web)
+            .delete("/api/contacts/"+(contact.id+1))
+            .set("Authorization","test");
+
+        expect(result.status).toBe(404);
+    });
+})

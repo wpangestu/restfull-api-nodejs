@@ -70,4 +70,37 @@ const createManyTestContacts = async ()=>{
   }
 }
 
-export { removeTestUser, createTestUser, getTestUser, removeAllTestContact, createTestContact, getTestContact, createManyTestContacts };
+const removeAllAddress = async ()=>{
+  const contact = await getTestContact();
+  return prismaClient.address.deleteMany({
+    where:{
+      contact_id:contact.id
+    }
+  });
+}
+
+const createTesAddress = async ()=>{
+  const contact = await getTestContact();
+  return prismaClient.address.create({
+    data:{
+      contact_id:contact.id,
+      street:"street test",
+      city:"city test",
+      postal_code:"12345",
+      province:"jawa",
+      country:"indo"
+    }
+  });
+}
+
+const getAddress = async () =>{
+  const contact = await getTestContact();
+
+  return prismaClient.address.findFirst({
+    where:{
+      contact_id:contact.id
+    }
+  });
+}
+
+export { removeTestUser, createTestUser, getTestUser, removeAllTestContact, createTestContact, getTestContact, createManyTestContacts, removeAllAddress, getAddress, createTesAddress };

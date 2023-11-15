@@ -9,6 +9,7 @@ import {
 import supertest from "supertest";
 import {web} from "../src/application/web.js";
 import {logger} from "../src/application/logging.js";
+import {array} from "joi";
 
 describe("POST /api/contact/:contactId/address", function (){
     beforeEach(async ()=>{
@@ -257,5 +258,43 @@ describe("DELETE /api/contact/:contactId/address/:addressId", function () {
         expect(result.status).toBe(404);
         expect(result.body.errors).toBeDefined();
     });
+});
+
+describe("GET /api/contact/:contactId/address/", function () {
+    beforeEach(async () => {
+        await createTestUser();
+        await createTestContact();
+        await createTesAddress();
+    });
+
+    afterEach(async () => {
+        await removeAllAddress();
+        await removeAllTestContact();
+        await removeTestUser();
+    });
+
+    it('should be get list of address', async () => {
+        const contact = await getTestContact();
+
+        const result = await supertest(web)
+            .get("/api/contacts/"+contact.id+"/address")
+            .set("Authorization", "test");
+
+        expect(result.status).toBe(200);
+        expect(result.body.data).toBeInstanceOf(Array);
+        expect(result.body.data).toHaveLength(1);
+    });
+
+    it('should be reject when contact id is not found', async () => {
+        const contact = await getTestContact();
+
+        const result = await supertest(web)
+            .get("/api/contacts/"+(contact.id+1)+"/address")
+            .set("Authorization", "test");
+
+        expect(result.status).toBe(404);
+        expect(result.body.errors).toBeDefined();
+    });
+
 });
 
